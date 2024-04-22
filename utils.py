@@ -4,16 +4,15 @@ import string
 
 from faker import Faker
 
+from static import COURIER_URL
+
 
 def generate_random_string(length):
     letters = string.ascii_lowercase
     random_string = ''.join(random.choice(letters) for i in range(length))
     return random_string
 
-
-def register_new_courier_and_return_login_password():
-
-    login_pass = []
+def get_register_payload():
 
     login = generate_random_string(10)
     password = generate_random_string(10)
@@ -25,12 +24,18 @@ def register_new_courier_and_return_login_password():
         "firstName": first_name
     }
 
-    response = requests.post('https://qa-scooter.praktikum-services.ru/api/v1/courier', data=payload)
+    return payload
+
+def register_new_courier_and_return_login_password(payload):
+
+    login_pass = []
+
+    response = requests.post(COURIER_URL, data=payload)
 
     if response.status_code == 201:
-        login_pass.append(login)
-        login_pass.append(password)
-        login_pass.append(first_name)
+        login_pass.append(payload['login'])
+        login_pass.append(payload['password'])
+        login_pass.append(payload['first_name'])
 
     return login_pass
 
